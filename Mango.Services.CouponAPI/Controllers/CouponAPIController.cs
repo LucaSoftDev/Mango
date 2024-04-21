@@ -1,53 +1,62 @@
-﻿using Mango.Services.CouponAPI.Data;
-using Mango.Services.CouponAPI.Models;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Mango.Services.CouponAPI.Data;
+using Mango.Services.CouponAPI.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mango.Services.CouponAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CouponAPIController : ControllerBase
+    public class CouponApiController(AppDbContext db, IMapper mapper) : ControllerBase
     {
-        private readonly AppDbContext _db;
-
-        public CouponAPIController(AppDbContext db)
-        {
-            _db = db;
-        }
+        private readonly ResponseDto _response = new();
 
         [HttpGet]
-        public object Get()
+        public ResponseDto Get()
         {
             try
             {
-                IEnumerable<Coupon> objList = _db.Coupons.ToList();
-                return objList;
+                _response.Result = mapper.Map<IEnumerable<CouponDto>>(db.Coupons.ToList());
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                _response.IsSuccess = false;
+                _response.Message = e.Message;
             }
-
-            return null;
+            return _response;
         }
 
         [HttpGet("{id:int}")]
-        public object Get(int id)
+        public ResponseDto Get(int id)
         {
             try
             {
-                var ret = _db.Coupons.First(u => u.Id == id);
-                return ret;
+                var ret = db.Coupons.First(u => u.Id == id);
+                _response.Result = mapper.Map<CouponDto>(ret);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                _response.IsSuccess = false;
+                _response.Message = e.Message;
             }
-
-            return null;
+            return _response;
         }
+
+        [HttpGet("GetByCode/{code}")]
+        public ResponseDto GetByCode(string code)
+        {
+            try
+            {
+                var ret = db.Coupons.FirstOrDefault(u => u.CouponCode.ToLower() == code.ToLower());
+                _response.Result = mapper.Map<CouponDto>(ret);
+            }
+            catch (Exception e)
+            {
+                _response.IsSuccess = false;
+                _response.Message = e.Message;
+            }
+            return _response;
+        }
+
     }
 }
