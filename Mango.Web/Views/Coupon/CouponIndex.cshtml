@@ -43,29 +43,15 @@
                             @(item.DiscountAmount.ToString("c"))
                         </td>
                         <td>
-                            @(item.MinAmount.ToString("c")))
+                            @(item.MinAmount.ToString("c"))
                         </td>
                         <td>
-                            <a class="btn btn-danger">
+                            <a asp-action="CouponDelete" asp-route-Id="@item.Id" class="btn btn-danger">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>
                 }
-				<tr>
-					<td>
-					</td>
-					<td>
-					</td>
-					<td>
-					</td>
-					<td>
-						<a class="btn btn-danger">
-							<i class="bi bi-trash"></i>
-						</a>
-					</td>
-				</tr>
-
 			</tbody>
 		</table>
 
